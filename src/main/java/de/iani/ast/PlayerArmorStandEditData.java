@@ -17,11 +17,19 @@ import org.bukkit.util.EulerAngle;
 
 public class PlayerArmorStandEditData {
     public static enum EditState {
-        MainWindow, RotationWindow, RotationWithoutWindow
+        MainWindow,
+        RotationWindow,
+        RotationWithoutWindow
     }
 
     public static enum RotatablePart {
-        Head, Body, LeftArm, RightArm, LeftLeg, RightLeg, Position
+        Head,
+        Body,
+        LeftArm,
+        RightArm,
+        LeftLeg,
+        RightLeg,
+        Position
     }
 
     private ArmorStandTools plugin;
@@ -230,7 +238,7 @@ public class PlayerArmorStandEditData {
             armorStandInventory.setItem(9 * 2 + 8, armorStand.getLeggings());
             armorStandInventory.setItem(9 * 3 + 8, armorStand.getBoots());
             armorStandInventory.setItem(9 * 4 + 8, armorStand.getEquipment().getItemInOffHand());
-            armorStandInventory.setItem(9 * 5 + 8, armorStand.getItemInHand());
+            armorStandInventory.setItem(9 * 5 + 8, armorStand.getEquipment().getItemInMainHand());
         }
     }
 
