@@ -1,7 +1,7 @@
 package de.iani.ast;
 
+import de.iani.ast.PlayerArmorStandEditData.EditState;
 import java.util.UUID;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -26,8 +26,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import de.iani.ast.PlayerArmorStandEditData.EditState;
 
 public class ArmorStandListener implements Listener {
 
@@ -83,21 +81,21 @@ public class ArmorStandListener implements Listener {
                 return;
             }
             int numInTop = event.getView().getTopInventory().getSize();
-            // if (event.getRawSlots().size() == 1) {
-            // int slot = event.getRawSlots().iterator().next();
-            // if (slot >= 0 && slot <= numInTop) {
-            // InventoryClickEvent ice = new InventoryClickEvent(event.getView(), SlotType.CONTAINER, slot, event.getType() == DragType.SINGLE ? ClickType.RIGHT : ClickType.LEFT, event.getType() == DragType.SINGLE ? InventoryAction.PLACE_ONE : InventoryAction.PLACE_ALL);
-            // ItemStack newCursor = event.getCursor();
-            // event.setCursor(event.getOldCursor());
-            // data.onInventoryClicked(slot, ice);
-            // event.getOldCursor().s
-            // plugin.getLogger().info("" + ice.getCursor());
-            // if (ice.isCancelled()) {
-            // event.setCancelled(true);
-            // }
-            // return;
-            // }
-            // }
+            if (event.getRawSlots().size() == 1) {
+                int slot = event.getRawSlots().iterator().next();
+                if (slot >= 0 && slot <= numInTop) {
+                    // InventoryClickEvent ice = new InventoryClickEvent(event.getView(), SlotType.CONTAINER, slot, event.getType() == DragType.SINGLE ? ClickType.RIGHT : ClickType.LEFT, event.getType() == DragType.SINGLE ? InventoryAction.PLACE_ONE : InventoryAction.PLACE_ALL);
+                    // ItemStack newCursor = event.getCursor();
+                    // event.setCursor(event.getOldCursor());
+                    // data.onInventoryClicked(slot, ice);
+                    // // event.getOldCursor().s
+                    // plugin.getLogger().info("" + ice.getCursor());
+                    // if (ice.isCancelled()) {
+                    // event.setCancelled(true);
+                    // }
+                    // return;
+                }
+            }
             for (Integer slot : event.getRawSlots()) {
                 if (slot >= 0 && slot <= numInTop) {
                     event.setCancelled(true);
