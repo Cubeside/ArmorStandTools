@@ -2,7 +2,6 @@ package de.iani.ast;
 
 import java.text.NumberFormat;
 import java.util.Arrays;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -72,8 +71,8 @@ public class PlayerArmorStandEditData {
         this.owner = owner;
         this.armorStand = armorStand;
         this.editState = EditState.MainWindow;
-        aktiv = setItemStackName(new ItemStack(Material.CACTUS_GREEN), ChatColor.GREEN + "aktiv");
-        inaktiv = setItemStackName(new ItemStack(Material.ROSE_RED), ChatColor.RED + "inaktiv");
+        aktiv = setItemStackName(new ItemStack(Material.GREEN_DYE), ChatColor.GREEN + "aktiv");
+        inaktiv = setItemStackName(new ItemStack(Material.RED_DYE), ChatColor.RED + "inaktiv");
 
         armorStandInventory = plugin.getServer().createInventory(owner, 9 * 6, "Rüstungsständer bearbeiten");
         editGeneral();
@@ -285,9 +284,9 @@ public class PlayerArmorStandEditData {
             z = angle.getZ();
         }
         NumberFormat format = NumberFormat.getNumberInstance();
-        ItemStack stackx = setItemStackName(new ItemStack(Material.DANDELION_YELLOW), "x = " + format.format(x));
-        ItemStack stacky = setItemStackName(new ItemStack(Material.DANDELION_YELLOW), "y = " + format.format(y));
-        ItemStack stackz = setItemStackName(new ItemStack(Material.DANDELION_YELLOW), "z = " + format.format(z));
+        ItemStack stackx = setItemStackName(new ItemStack(Material.YELLOW_DYE), "x = " + format.format(x));
+        ItemStack stacky = setItemStackName(new ItemStack(Material.YELLOW_DYE), "y = " + format.format(y));
+        ItemStack stackz = setItemStackName(new ItemStack(Material.YELLOW_DYE), "z = " + format.format(z));
         if (rotationToEdit != RotatablePart.Position) {
             stackx = setItemStackLore(stackx, "Mit Klick auf 0 setzen.");
             stacky = setItemStackLore(stacky, "Mit Klick auf 0 setzen.");
@@ -297,7 +296,7 @@ public class PlayerArmorStandEditData {
         armorStandInventory.setItem(9 * 1 + 3, stacky);
         armorStandInventory.setItem(9 * 2 + 3, stackz);
         if (rotationToEdit == RotatablePart.Position) {
-            armorStandInventory.setItem(9 * 3 + 3, setItemStackLore(setItemStackName(new ItemStack(Material.DANDELION_YELLOW), "yaw = " + format.format(yaw)), "Mit Klick auf 0 setzen."));
+            armorStandInventory.setItem(9 * 3 + 3, setItemStackLore(setItemStackName(new ItemStack(Material.YELLOW_DYE), "yaw = " + format.format(yaw)), "Mit Klick auf 0 setzen."));
             // armorStandInventory.setItem(9 * 4 + 3, setItemStackName(new Dye(DyeColor.YELLOW).toItemStack(1), "pitch = " + format.format(pitch)));
         }
     }
@@ -308,12 +307,12 @@ public class PlayerArmorStandEditData {
         armorStandInventory.clear();
 
         for (int row = 0; row < (part == RotatablePart.Position ? 4 : 3); row++) {
-            armorStandInventory.setItem(9 * row + 0, setItemStackLore(setItemStackName(new ItemStack(Material.ROSE_RED), "-1.0"), "Shift+Klick: -0.001"));
-            armorStandInventory.setItem(9 * row + 1, setItemStackLore(setItemStackName(new ItemStack(Material.ROSE_RED), "-0.1"), "Shift+Klick: -0.0001"));
-            armorStandInventory.setItem(9 * row + 2, setItemStackLore(setItemStackName(new ItemStack(Material.ROSE_RED), "-0.01"), "Shift+Klick: -0.00001"));
-            armorStandInventory.setItem(9 * row + 4, setItemStackLore(setItemStackName(new ItemStack(Material.CACTUS_GREEN), "+0.01"), "Shift+Klick: +0.00001"));
-            armorStandInventory.setItem(9 * row + 5, setItemStackLore(setItemStackName(new ItemStack(Material.CACTUS_GREEN), "+0.1"), "Shift+Klick: +0.0001"));
-            armorStandInventory.setItem(9 * row + 6, setItemStackLore(setItemStackName(new ItemStack(Material.CACTUS_GREEN), "+1.0"), "Shift+Klick: +0.001"));
+            armorStandInventory.setItem(9 * row + 0, setItemStackLore(setItemStackName(new ItemStack(Material.RED_DYE), "-1.0"), "Shift+Klick: -0.001"));
+            armorStandInventory.setItem(9 * row + 1, setItemStackLore(setItemStackName(new ItemStack(Material.RED_DYE), "-0.1"), "Shift+Klick: -0.0001"));
+            armorStandInventory.setItem(9 * row + 2, setItemStackLore(setItemStackName(new ItemStack(Material.RED_DYE), "-0.01"), "Shift+Klick: -0.00001"));
+            armorStandInventory.setItem(9 * row + 4, setItemStackLore(setItemStackName(new ItemStack(Material.GREEN_DYE), "+0.01"), "Shift+Klick: +0.00001"));
+            armorStandInventory.setItem(9 * row + 5, setItemStackLore(setItemStackName(new ItemStack(Material.GREEN_DYE), "+0.1"), "Shift+Klick: +0.0001"));
+            armorStandInventory.setItem(9 * row + 6, setItemStackLore(setItemStackName(new ItemStack(Material.GREEN_DYE), "+1.0"), "Shift+Klick: +0.001"));
             armorStandInventory.setItem(9 * row + 8, setItemStackName(new ItemStack(Material.CYAN_DYE), "Frei bearbeiten"));
         }
 
