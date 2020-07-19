@@ -73,8 +73,11 @@ public class PlayerArmorStandEditData {
         this.editState = EditState.MainWindow;
         aktiv = setItemStackName(new ItemStack(Material.GREEN_DYE), ChatColor.GREEN + "aktiv");
         inaktiv = setItemStackName(new ItemStack(Material.RED_DYE), ChatColor.RED + "inaktiv");
-
-        armorStandInventory = plugin.getServer().createInventory(owner, 9 * 6, "Rüstungsständer bearbeiten");
+        String name = armorStand.getCustomName();
+        if (name == null) {
+            name = "Rüstungsständer";
+        }
+        armorStandInventory = plugin.getServer().createInventory(owner, 9 * 6, name + ChatColor.RESET + " bearbeiten");
         editGeneral();
         owner.openInventory(armorStandInventory);
     }
