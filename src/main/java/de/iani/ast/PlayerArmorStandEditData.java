@@ -235,10 +235,10 @@ public class PlayerArmorStandEditData {
 
     public void updateArmorstandInventory() {
         if (editState == EditState.MainWindow) {
-            armorStandInventory.setItem(9 * 0 + 8, armorStand.getHelmet());
-            armorStandInventory.setItem(9 * 1 + 8, armorStand.getChestplate());
-            armorStandInventory.setItem(9 * 2 + 8, armorStand.getLeggings());
-            armorStandInventory.setItem(9 * 3 + 8, armorStand.getBoots());
+            armorStandInventory.setItem(9 * 0 + 8, armorStand.getEquipment().getHelmet());
+            armorStandInventory.setItem(9 * 1 + 8, armorStand.getEquipment().getChestplate());
+            armorStandInventory.setItem(9 * 2 + 8, armorStand.getEquipment().getLeggings());
+            armorStandInventory.setItem(9 * 3 + 8, armorStand.getEquipment().getBoots());
             armorStandInventory.setItem(9 * 4 + 8, armorStand.getEquipment().getItemInOffHand());
             armorStandInventory.setItem(9 * 5 + 8, armorStand.getEquipment().getItemInMainHand());
         }
@@ -431,33 +431,33 @@ public class PlayerArmorStandEditData {
             } else if (slot == 9 * 5 + 1) {
                 toggleNameIsVisible();
             } else if (slot == 9 * 0 + 8) {
-                if (ArmorStandTools.itemStackEquals(armorStand.getHelmet(), armorStandInventory.getItem(9 * 0 + 8))) {
+                if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getHelmet(), armorStandInventory.getItem(9 * 0 + 8))) {
                     if (event.getAction() == InventoryAction.PICKUP_ALL || event.getAction() == InventoryAction.PLACE_ALL || event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
-                        armorStand.setHelmet(event.getCursor());
+                        armorStand.getEquipment().setHelmet(event.getCursor());
                         cancel = false;
                     }
                 }
                 updateArmorstandInventoryLater();
             } else if (slot == 9 * 1 + 8) {
-                if (ArmorStandTools.itemStackEquals(armorStand.getChestplate(), armorStandInventory.getItem(9 * 1 + 8))) {
+                if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getChestplate(), armorStandInventory.getItem(9 * 1 + 8))) {
                     if (event.getAction() == InventoryAction.PICKUP_ALL || event.getAction() == InventoryAction.PLACE_ALL || event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
-                        armorStand.setChestplate(event.getCursor());
+                        armorStand.getEquipment().setChestplate(event.getCursor());
                         cancel = false;
                     }
                 }
                 updateArmorstandInventoryLater();
             } else if (slot == 9 * 2 + 8) {
-                if (ArmorStandTools.itemStackEquals(armorStand.getLeggings(), armorStandInventory.getItem(9 * 2 + 8))) {
+                if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getLeggings(), armorStandInventory.getItem(9 * 2 + 8))) {
                     if (event.getAction() == InventoryAction.PICKUP_ALL || event.getAction() == InventoryAction.PLACE_ALL || event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
-                        armorStand.setLeggings(event.getCursor());
+                        armorStand.getEquipment().setLeggings(event.getCursor());
                         cancel = false;
                     }
                 }
                 updateArmorstandInventoryLater();
             } else if (slot == 9 * 3 + 8) {
-                if (ArmorStandTools.itemStackEquals(armorStand.getBoots(), armorStandInventory.getItem(9 * 3 + 8))) {
+                if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getBoots(), armorStandInventory.getItem(9 * 3 + 8))) {
                     if (event.getAction() == InventoryAction.PICKUP_ALL || event.getAction() == InventoryAction.PLACE_ALL || event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
-                        armorStand.setBoots(event.getCursor());
+                        armorStand.getEquipment().setBoots(event.getCursor());
                         cancel = false;
                     }
                 }
