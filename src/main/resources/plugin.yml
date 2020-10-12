@@ -1,7 +1,7 @@
 name: ArmorStandTools
 
 main: de.iani.ast.ArmorStandTools
-
+softdepend: [WorldEdit, WorldGuard]
 version: 1.0.7
 
 author: Brokkonaut
