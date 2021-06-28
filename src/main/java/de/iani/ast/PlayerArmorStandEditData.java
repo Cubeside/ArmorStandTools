@@ -43,6 +43,7 @@ public class PlayerArmorStandEditData {
     private Location initialLocation;
     private Location lastLocation;
     private int freeRotationAxis;
+    private int freeMoveStartTick;
 
     // Inventory armorStandEditInventory = plugin.getServer().createInventory(event.getPlayer(), 9 * 6, "Rüstungsständer bearbeiten");
     // event.getPlayer().openInventory(armorStandEditInventory);
@@ -527,6 +528,7 @@ public class PlayerArmorStandEditData {
                     initialLocation = owner.getLocation();
                     lastLocation = initialLocation.clone();
                     freeRotationAxis = row;
+                    freeMoveStartTick = plugin.getServer().getCurrentTick();
                     owner.closeInventory();
                     owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Freie Modifikation aktiviert.");
                     owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Bewege dich, um den Rüstungsständer zu verändern.");
@@ -566,4 +568,7 @@ public class PlayerArmorStandEditData {
         return armorStand;
     }
 
+    public int getFreeMoveStartTick() {
+        return freeMoveStartTick;
+    }
 }

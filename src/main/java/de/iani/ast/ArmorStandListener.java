@@ -156,9 +156,12 @@ public class ArmorStandListener implements Listener {
         PlayerArmorStandEditData data = plugin.getEditData(player);
         if (data == null || data.getEditState() != EditState.RotationWithoutWindow) {
             return false;
+
         }
-        player.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Freie Modifikation beendet.");
-        plugin.stopEditing(player, true);
+        if (plugin.getServer().getCurrentTick() - data.getFreeMoveStartTick() > 5) {
+            player.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Freie Modifikation beendet.");
+            plugin.stopEditing(player, true);
+        }
         return true;
     }
 
