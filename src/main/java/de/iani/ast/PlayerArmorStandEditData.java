@@ -9,6 +9,8 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -212,6 +214,21 @@ public class PlayerArmorStandEditData {
     }
 
     public void toggleIsInvisible() {
+        if (armorStand.isVisible()) {
+            // when making invisible, there must be one not empty slot
+            boolean hasEquip = false;
+            EntityEquipment equip = armorStand.getEquipment();
+            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getHelmet(), null);
+            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getChestplate(), null);
+            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getLeggings(), null);
+            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getBoots(), null);
+            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getItemInMainHand(), null);
+            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getItemInOffHand(), null);
+            if (!hasEquip) {
+                owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Um Rüstungsständer unsichtbar zu schalten muss mindestens ein Equipment-Slot belegt sein.");
+                return;
+            }
+        }
         armorStand.setVisible(!armorStand.isVisible());
         owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Unsichtbar ist nun " + (!armorStand.isVisible() ? ChatColor.GREEN + "AKTIV" : ChatColor.RED + "INAKTIV"));
         updateIsInvisible();
@@ -417,7 +434,60 @@ public class PlayerArmorStandEditData {
     }
 
     public void onInventoryClicked(int slot, InventoryClickEvent event) {
-        boolean cancel = true;
+        int col = slot % 9;
+        // int row = slot / 9;
+        if (editState == EditState.MainWindow && col == 8) {
+            boolean cancel = true;
+            if (event.getAction() == InventoryAction.PICKUP_ALL || event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
+                if (placeItemInSlot(slot, event.getCursor())) {
+                    cancel = false;
+                }
+            } else if (event.getAction() == InventoryAction.PLACE_ALL) {
+                ItemStack stack = new ItemStack(event.getCursor());
+                ItemStack existing = armorStandInventory.getItem(slot);
+                if (existing == null || existing.isSimilar(stack)) {
+                    if (existing != null) {
+                        stack.setAmount(stack.getAmount() + existing.getAmount());
+                    }
+                    if (placeItemInSlot(slot, stack)) {
+                        cancel = false;
+                    }
+                }
+            } else if (event.getAction() == InventoryAction.PLACE_ONE) {
+                ItemStack stack = new ItemStack(event.getCursor());
+                ItemStack existing = armorStandInventory.getItem(slot);
+                if (existing == null || existing.isSimilar(stack)) {
+                    stack.setAmount(1);
+                    if (existing != null) {
+                        stack.setAmount(stack.getAmount() + existing.getAmount());
+                    }
+                    if (placeItemInSlot(slot, stack)) {
+                        cancel = false;
+                    }
+                }
+            }
+            if (cancel) {
+                event.setCancelled(true);
+            }
+        } else {
+            handleModificationSlotClick(slot, event.isShiftClick());
+            event.setCancelled(true);
+        }
+    }
+
+    public void onInventoryDrag(int slot, ItemStack newInSlot, InventoryDragEvent event) {
+        int col = slot % 9;
+        if (editState == EditState.MainWindow && col == 8) {
+            if (!placeItemInSlot(slot, newInSlot)) {
+                event.setCancelled(true);
+            }
+        } else {
+            handleModificationSlotClick(slot, false);
+            event.setCancelled(true);
+        }
+    }
+
+    private void handleModificationSlotClick(int slot, boolean shift) {
         if (editState == EditState.MainWindow) {
             if (slot == 9 * 0 + 1) {
                 toggleHasBasePlate();
@@ -431,54 +501,6 @@ public class PlayerArmorStandEditData {
                 toggleIsInvisible();
             } else if (slot == 9 * 5 + 1) {
                 toggleNameIsVisible();
-            } else if (slot == 9 * 0 + 8) {
-                if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getHelmet(), armorStandInventory.getItem(9 * 0 + 8))) {
-                    if (event.getAction() == InventoryAction.PICKUP_ALL || event.getAction() == InventoryAction.PLACE_ALL || event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
-                        armorStand.getEquipment().setHelmet(event.getCursor());
-                        cancel = false;
-                    }
-                }
-                updateArmorstandInventoryLater();
-            } else if (slot == 9 * 1 + 8) {
-                if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getChestplate(), armorStandInventory.getItem(9 * 1 + 8))) {
-                    if (event.getAction() == InventoryAction.PICKUP_ALL || event.getAction() == InventoryAction.PLACE_ALL || event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
-                        armorStand.getEquipment().setChestplate(event.getCursor());
-                        cancel = false;
-                    }
-                }
-                updateArmorstandInventoryLater();
-            } else if (slot == 9 * 2 + 8) {
-                if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getLeggings(), armorStandInventory.getItem(9 * 2 + 8))) {
-                    if (event.getAction() == InventoryAction.PICKUP_ALL || event.getAction() == InventoryAction.PLACE_ALL || event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
-                        armorStand.getEquipment().setLeggings(event.getCursor());
-                        cancel = false;
-                    }
-                }
-                updateArmorstandInventoryLater();
-            } else if (slot == 9 * 3 + 8) {
-                if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getBoots(), armorStandInventory.getItem(9 * 3 + 8))) {
-                    if (event.getAction() == InventoryAction.PICKUP_ALL || event.getAction() == InventoryAction.PLACE_ALL || event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
-                        armorStand.getEquipment().setBoots(event.getCursor());
-                        cancel = false;
-                    }
-                }
-                updateArmorstandInventoryLater();
-            } else if (slot == 9 * 4 + 8) {
-                if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getItemInOffHand(), armorStandInventory.getItem(9 * 4 + 8))) {
-                    if (event.getAction() == InventoryAction.PICKUP_ALL || event.getAction() == InventoryAction.PLACE_ALL || event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
-                        armorStand.getEquipment().setItemInOffHand(event.getCursor());
-                        cancel = false;
-                    }
-                }
-                updateArmorstandInventoryLater();
-            } else if (slot == 9 * 5 + 8) {
-                if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getItemInMainHand(), armorStandInventory.getItem(9 * 5 + 8))) {
-                    if (event.getAction() == InventoryAction.PICKUP_ALL || event.getAction() == InventoryAction.PLACE_ALL || event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
-                        armorStand.getEquipment().setItemInMainHand(event.getCursor());
-                        cancel = false;
-                    }
-                }
-                updateArmorstandInventoryLater();
             } else if (slot == 9 * 1 + 4) {
                 editRotation(RotatablePart.Head);
             } else if (slot == 9 * 2 + 4) {
@@ -516,7 +538,7 @@ public class PlayerArmorStandEditData {
                     } else if (slotInRow == 6) {
                         add = 1;
                     }
-                    if (event.isShiftClick() && !Double.isNaN(add)) {
+                    if (shift && !Double.isNaN(add)) {
                         add *= 0.001;
                     }
                     if (add != 0.0) {
@@ -538,9 +560,44 @@ public class PlayerArmorStandEditData {
                 editGeneral();
             }
         }
-        if (cancel) {
-            event.setCancelled(true);
+    }
+
+    private boolean placeItemInSlot(int slot, ItemStack newInSlot) {
+        updateArmorstandInventoryLater();
+        // we have to check if the item in the display inventory is the item on the armor stand
+        // - if it is not the same, it was modified by something else and we cancel and refresh the inv
+        if (slot == 9 * 0 + 8) {
+            if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getHelmet(), armorStandInventory.getItem(9 * 0 + 8))) {
+                armorStand.getEquipment().setHelmet(newInSlot);
+                return true;
+            }
+        } else if (slot == 9 * 1 + 8) {
+            if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getChestplate(), armorStandInventory.getItem(9 * 1 + 8))) {
+                armorStand.getEquipment().setChestplate(newInSlot);
+                return true;
+            }
+        } else if (slot == 9 * 2 + 8) {
+            if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getLeggings(), armorStandInventory.getItem(9 * 2 + 8))) {
+                armorStand.getEquipment().setLeggings(newInSlot);
+                return true;
+            }
+        } else if (slot == 9 * 3 + 8) {
+            if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getBoots(), armorStandInventory.getItem(9 * 3 + 8))) {
+                armorStand.getEquipment().setBoots(newInSlot);
+                return true;
+            }
+        } else if (slot == 9 * 4 + 8) {
+            if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getItemInOffHand(), armorStandInventory.getItem(9 * 4 + 8))) {
+                armorStand.getEquipment().setItemInOffHand(newInSlot);
+                return true;
+            }
+        } else if (slot == 9 * 5 + 8) {
+            if (ArmorStandTools.itemStackEquals(armorStand.getEquipment().getItemInMainHand(), armorStandInventory.getItem(9 * 5 + 8))) {
+                armorStand.getEquipment().setItemInMainHand(newInSlot);
+                return true;
+            }
         }
+        return false;
     }
 
     public void onPlayerMove(Location to) {

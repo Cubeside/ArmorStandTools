@@ -83,23 +83,16 @@ public class ArmorStandListener implements Listener {
             int numInTop = event.getView().getTopInventory().getSize();
             if (event.getRawSlots().size() == 1) {
                 int slot = event.getRawSlots().iterator().next();
-                if (slot >= 0 && slot <= numInTop) {
-                    // InventoryClickEvent ice = new InventoryClickEvent(event.getView(), SlotType.CONTAINER, slot, event.getType() == DragType.SINGLE ? ClickType.RIGHT : ClickType.LEFT, event.getType() == DragType.SINGLE ? InventoryAction.PLACE_ONE : InventoryAction.PLACE_ALL);
-                    // ItemStack newCursor = event.getCursor();
-                    // event.setCursor(event.getOldCursor());
-                    // data.onInventoryClicked(slot, ice);
-                    // // event.getOldCursor().s
-                    // plugin.getLogger().info("" + ice.getCursor());
-                    // if (ice.isCancelled()) {
-                    // event.setCancelled(true);
-                    // }
-                    // return;
+                if (slot >= 0 && slot < numInTop) {
+                    ItemStack newInSlot = event.getNewItems().values().iterator().next();
+                    data.onInventoryDrag(slot, newInSlot, event);
                 }
-            }
-            for (Integer slot : event.getRawSlots()) {
-                if (slot >= 0 && slot <= numInTop) {
-                    event.setCancelled(true);
-                    return;
+            } else {
+                for (Integer slot : event.getRawSlots()) {
+                    if (slot >= 0 && slot < numInTop) {
+                        event.setCancelled(true);
+                        return;
+                    }
                 }
             }
         }
