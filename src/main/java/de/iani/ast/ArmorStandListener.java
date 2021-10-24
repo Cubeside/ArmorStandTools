@@ -55,8 +55,9 @@ public class ArmorStandListener implements Listener {
         if (e instanceof ArmorStand) {
             ArmorStand armorStand = (ArmorStand) e;
             if (event.getPlayer().isSneaking()) {
-                plugin.startEditing(event.getPlayer(), armorStand);
-                event.setCancelled(true);
+                if (plugin.startEditing(event.getPlayer(), armorStand)) {
+                    event.setCancelled(true);
+                }
             }
             plugin.checkArmorStandNoEquipLater(armorStand);
         }

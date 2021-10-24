@@ -1,8 +1,9 @@
 package de.iani.ast;
 
+import com.google.common.base.Objects;
+import de.iani.ast.events.PlayerStartEditingArmorStandEvent;
 import java.util.HashMap;
 import java.util.UUID;
-
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -10,15 +11,13 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.google.common.base.Objects;
-
 public class ArmorStandTools extends JavaPlugin {
 
     private HashMap<UUID, PlayerArmorStandEditData> armorStandEdits;
 
     @Override
     public void onEnable() {
-        armorStandEdits = new HashMap<UUID, PlayerArmorStandEditData>();
+        armorStandEdits = new HashMap<>();
         getServer().getPluginManager().registerEvents(new ArmorStandListener(this), this);
 
         if (getServer().getPluginManager().getPlugin("WorldGuard") != null) {
@@ -26,11 +25,15 @@ public class ArmorStandTools extends JavaPlugin {
         }
     }
 
-    public void startEditing(Player player, ArmorStand armorstand) {
+    public boolean startEditing(Player player, ArmorStand armorstand) {
+        if (!new PlayerStartEditingArmorStandEvent(player, armorstand).callEvent()) {
+            return false;
+        }
         if (!armorStandEdits.containsKey(player.getUniqueId())) {
             PlayerArmorStandEditData data = new PlayerArmorStandEditData(this, player, armorstand);
             armorStandEdits.put(player.getUniqueId(), data);
         }
+        return true;
     }
 
     public void stopEditing(Player player, boolean stopIfFreeMove) {
