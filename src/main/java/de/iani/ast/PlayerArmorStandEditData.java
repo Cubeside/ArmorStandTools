@@ -367,7 +367,7 @@ public class PlayerArmorStandEditData {
                     owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "X = " + format.format(location.getX()));
                 }
             } else if (xyz == 1 && Double.isFinite(diff)) {
-                location.setY(Math.max(Math.min(location.getY() + diff, 255), 0));
+                location.setY(Math.max(Math.min(location.getY() + diff, location.getWorld().getMaxHeight()), location.getWorld().getMinHeight()));
                 if (editState != EditState.RotationWithoutWindow) {
                     owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Y = " + format.format(location.getY()));
                 }
