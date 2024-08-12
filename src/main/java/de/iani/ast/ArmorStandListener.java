@@ -59,7 +59,6 @@ public class ArmorStandListener implements Listener {
                     event.setCancelled(true);
                 }
             }
-            plugin.checkArmorStandNoEquipLater(armorStand);
         }
     }
 

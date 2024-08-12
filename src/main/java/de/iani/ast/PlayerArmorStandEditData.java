@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -219,25 +218,9 @@ public class PlayerArmorStandEditData {
     }
 
     public void toggleIsInvisible() {
-        if (armorStand.isVisible()) {
-            // when making invisible, there must be one not empty slot
-            boolean hasEquip = false;
-            EntityEquipment equip = armorStand.getEquipment();
-            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getHelmet(), null);
-            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getChestplate(), null);
-            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getLeggings(), null);
-            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getBoots(), null);
-            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getItemInMainHand(), null);
-            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getItemInOffHand(), null);
-            if (!hasEquip) {
-                owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Um Rüstungsständer unsichtbar zu schalten muss mindestens ein Equipment-Slot belegt sein.");
-                return;
-            }
-        }
         armorStand.setVisible(!armorStand.isVisible());
         owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Unsichtbar ist nun " + (!armorStand.isVisible() ? ChatColor.GREEN + "AKTIV" : ChatColor.RED + "INAKTIV"));
         updateIsInvisible();
-        plugin.checkArmorStandNoEquipLater(armorStand);
     }
 
     public void updateNameIsVisible() {
@@ -273,7 +256,6 @@ public class PlayerArmorStandEditData {
                 @Override
                 public void run() {
                     updateArmorstandInventory();
-                    plugin.checkArmorStandNoEquip(armorStand);
                 }
             });
         }

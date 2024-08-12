@@ -7,7 +7,6 @@ import java.util.UUID;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -49,33 +48,6 @@ public class ArmorStandTools extends JavaPlugin {
 
     public PlayerArmorStandEditData getEditData(Player player) {
         return armorStandEdits.isEmpty() ? null : armorStandEdits.get(player.getUniqueId());
-    }
-
-    public void checkArmorStandNoEquip(ArmorStand armorStand) {
-        if (!armorStand.isVisible()) {
-            boolean hasEquip = false;
-            EntityEquipment equip = armorStand.getEquipment();
-            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getHelmet(), null);
-            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getChestplate(), null);
-            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getLeggings(), null);
-            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getBoots(), null);
-            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getItemInMainHand(), null);
-            hasEquip = hasEquip || !ArmorStandTools.itemStackEquals(equip.getItemInOffHand(), null);
-            if (!hasEquip) {
-                armorStand.setVisible(true);
-            }
-        }
-    }
-
-    public void checkArmorStandNoEquipLater(ArmorStand armorStand) {
-        if (!armorStand.isVisible()) {
-            getServer().getScheduler().runTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    checkArmorStandNoEquip(armorStand);
-                }
-            });
-        }
     }
 
     public static boolean itemStackEquals(ItemStack stack1, ItemStack stack2) {
