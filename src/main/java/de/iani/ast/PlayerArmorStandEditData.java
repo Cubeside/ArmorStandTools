@@ -283,7 +283,7 @@ public class PlayerArmorStandEditData {
         } else if (rotationToEdit == RotatablePart.RightLeg) {
             angle = armorStand.getRightLegPose();
         } else if (rotationToEdit == RotatablePart.Size) {
-            x = armorStand.getAttribute(Attribute.GENERIC_SCALE).getBaseValue();
+            x = armorStand.getAttribute(Attribute.SCALE).getBaseValue();
             NumberFormat format = NumberFormat.getNumberInstance();
             ItemStack stackx = setItemStackName(new ItemStack(Material.YELLOW_DYE), "Size = " + format.format(x));
             stackx = setItemStackLore(stackx, "Mit Klick auf 1 setzen.");
@@ -386,7 +386,7 @@ public class PlayerArmorStandEditData {
             angle = armorStand.getRightLegPose();
         } else if (rotationToEdit == RotatablePart.Size) {
             if (xyz == 0) {
-                AttributeInstance scaleAttribute = armorStand.getAttribute(Attribute.GENERIC_SCALE);
+                AttributeInstance scaleAttribute = armorStand.getAttribute(Attribute.SCALE);
                 double value = Double.isFinite(diff) ? scaleAttribute.getBaseValue() + diff : 1.0;
                 if (value < 1f / 16f) {
                     value = 1f / 16f;
