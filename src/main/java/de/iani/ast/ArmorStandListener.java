@@ -2,7 +2,6 @@ package de.iani.ast;
 
 import de.iani.ast.PlayerArmorStandEditData.EditState;
 import java.util.UUID;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -112,7 +111,7 @@ public class ArmorStandListener implements Listener {
                 return;
             }
             lastArmorStand = data.getArmorStand();
-            if (event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
+            if (event.getAction() == InventoryAction.HOTBAR_SWAP || event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
                 event.setCancelled(true);
                 return;
             }
@@ -152,7 +151,7 @@ public class ArmorStandListener implements Listener {
 
         }
         if (plugin.getServer().getCurrentTick() - data.getFreeMoveStartTick() > 5) {
-            player.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Freie Modifikation beendet.");
+            Messages.send(player, "Freie Modifikation beendet.");
             plugin.stopEditing(player, true);
         }
         return true;

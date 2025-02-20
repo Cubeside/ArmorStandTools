@@ -1,18 +1,24 @@
 package de.iani.ast;
 
 import java.text.NumberFormat;
-import java.util.Arrays;
-import org.bukkit.ChatColor;
+import java.util.ArrayList;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.attribute.AttributeModifier.Operation;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.EulerAngle;
@@ -76,13 +82,13 @@ public class PlayerArmorStandEditData {
         this.owner = owner;
         this.armorStand = armorStand;
         this.editState = EditState.MainWindow;
-        aktiv = setItemStackName(new ItemStack(Material.GREEN_DYE), ChatColor.GREEN + "aktiv");
-        inaktiv = setItemStackName(new ItemStack(Material.RED_DYE), ChatColor.RED + "inaktiv");
-        String name = armorStand.getCustomName();
+        aktiv = setItemStackName(new ItemStack(Material.GREEN_DYE), Component.text("aktiv", NamedTextColor.GREEN));
+        inaktiv = setItemStackName(new ItemStack(Material.RED_DYE), Component.text("inaktiv", NamedTextColor.RED));
+        Component name = armorStand.customName();
         if (name == null) {
-            name = "Rüstungsständer";
+            name = Component.text("Rüstungsständer");
         }
-        armorStandInventory = plugin.getServer().createInventory(owner, 9 * 6, name + ChatColor.RESET + " bearbeiten");
+        armorStandInventory = plugin.getServer().createInventory(owner, 9 * 6, Component.empty().append(name).append(Component.text(" bearbeiten")));
         editGeneral();
         owner.openInventory(armorStandInventory);
     }
@@ -91,54 +97,74 @@ public class PlayerArmorStandEditData {
         this.editState = EditState.MainWindow;
         armorStandInventory.clear();
 
-        armorStandInventory.setItem(9 * 0, setItemStackLore(setItemStackName(new ItemStack(Material.STONE_PRESSURE_PLATE), ChatColor.GOLD.toString() + ChatColor.BOLD + "Bodenplatte")));
+        armorStandInventory.setItem(9 * 0, setItemStackLore(setItemStackNameGold(new ItemStack(Material.STONE_PRESSURE_PLATE), "Bodenplatte")));
         updateHasBasePlate();
-        armorStandInventory.setItem(9 * 1, setItemStackLore(setItemStackName(new ItemStack(Material.STICK), ChatColor.GOLD.toString() + ChatColor.BOLD + "Arme")));
+        armorStandInventory.setItem(9 * 1, setItemStackLore(setItemStackNameGold(new ItemStack(Material.STICK), "Arme")));
         updateHasArms();
-        armorStandInventory.setItem(9 * 2, setItemStackLore(setItemStackName(new ItemStack(Material.CLAY_BALL), ChatColor.GOLD.toString() + ChatColor.BOLD + "Verkleinert")));
+        armorStandInventory.setItem(9 * 2, setItemStackLore(setItemStackNameGold(new ItemStack(Material.CLAY_BALL), "Verkleinert")));
         updateIsSmall();
-        armorStandInventory.setItem(9 * 3, setItemStackLore(setItemStackName(new ItemStack(Material.RAIL), ChatColor.GOLD.toString() + ChatColor.BOLD + "Unbeweglich")));
+        armorStandInventory.setItem(9 * 3, setItemStackLore(setItemStackNameGold(new ItemStack(Material.RAIL), "Unbeweglich")));
         updateIsUnmoveable();
-        armorStandInventory.setItem(9 * 4, setItemStackLore(setItemStackName(new ItemStack(Material.POTION), ChatColor.GOLD.toString() + ChatColor.BOLD + "Unsichtbar")));
+        armorStandInventory.setItem(9 * 4, setItemStackLore(setItemStackNameGold(new ItemStack(Material.POTION), "Unsichtbar")));
         updateIsInvisible();
-        armorStandInventory.setItem(9 * 5, setItemStackLore(setItemStackName(new ItemStack(Material.NAME_TAG), ChatColor.GOLD.toString() + ChatColor.BOLD + "Name sichtbar"), "Der Name kann mit einem", "Namensschild geändert werden."));
+        armorStandInventory.setItem(9 * 5, setItemStackLore(setItemStackNameGold(new ItemStack(Material.NAME_TAG), "Name sichtbar"), "Der Name kann mit einem", "Namensschild geändert werden."));
         updateNameIsVisible();
 
-        armorStandInventory.setItem(9 * 0 + 7, setItemStackLore(setItemStackName(new ItemStack(Material.LEATHER_HELMET), ChatColor.GOLD.toString() + ChatColor.BOLD + "Helm")));
-        armorStandInventory.setItem(9 * 1 + 7, setItemStackLore(setItemStackName(new ItemStack(Material.LEATHER_CHESTPLATE), ChatColor.GOLD.toString() + ChatColor.BOLD + "Brustpanzer")));
-        armorStandInventory.setItem(9 * 2 + 7, setItemStackLore(setItemStackName(new ItemStack(Material.LEATHER_LEGGINGS), ChatColor.GOLD.toString() + ChatColor.BOLD + "Hose")));
-        armorStandInventory.setItem(9 * 3 + 7, setItemStackLore(setItemStackName(new ItemStack(Material.LEATHER_BOOTS), ChatColor.GOLD.toString() + ChatColor.BOLD + "Schuhe")));
-        armorStandInventory.setItem(9 * 4 + 7, setItemStackLore(setItemStackName(new ItemStack(Material.STICK), ChatColor.GOLD.toString() + ChatColor.BOLD + "Linke Hand")));
-        armorStandInventory.setItem(9 * 5 + 7, setItemStackLore(setItemStackName(new ItemStack(Material.STICK), ChatColor.GOLD.toString() + ChatColor.BOLD + "Rechte Hand")));
+        armorStandInventory.setItem(9 * 0 + 7, setItemStackHideAttributes(setItemStackLore(setItemStackNameGold(new ItemStack(Material.LEATHER_HELMET), "Helm"))));
+        armorStandInventory.setItem(9 * 1 + 7, setItemStackHideAttributes(setItemStackLore(setItemStackNameGold(new ItemStack(Material.LEATHER_CHESTPLATE), "Brustpanzer"))));
+        armorStandInventory.setItem(9 * 2 + 7, setItemStackHideAttributes(setItemStackLore(setItemStackNameGold(new ItemStack(Material.LEATHER_LEGGINGS), "Hose"))));
+        armorStandInventory.setItem(9 * 3 + 7, setItemStackHideAttributes(setItemStackLore(setItemStackNameGold(new ItemStack(Material.LEATHER_BOOTS), "Schuhe"))));
+        armorStandInventory.setItem(9 * 4 + 7, setItemStackLore(setItemStackNameGold(new ItemStack(Material.STICK), "Linke Hand")));
+        armorStandInventory.setItem(9 * 5 + 7, setItemStackLore(setItemStackNameGold(new ItemStack(Material.STICK), "Rechte Hand")));
         updateArmorstandInventory();
         updateArmorstandInventoryLater();
 
-        armorStandInventory.setItem(9 * 1 + 4, setItemStackLore(setItemStackName(new ItemStack(Material.IRON_HELMET), ChatColor.GOLD.toString() + ChatColor.BOLD + "Kopfdrehung")));
-        armorStandInventory.setItem(9 * 2 + 4, setItemStackLore(setItemStackName(new ItemStack(Material.IRON_CHESTPLATE), ChatColor.GOLD.toString() + ChatColor.BOLD + "Körperdrehung")));
-        armorStandInventory.setItem(9 * 2 + 3, setItemStackLore(setItemStackName(new ItemStack(Material.STICK), ChatColor.GOLD.toString() + ChatColor.BOLD + "Drehung linker Arm")));
-        armorStandInventory.setItem(9 * 2 + 5, setItemStackLore(setItemStackName(new ItemStack(Material.STICK), ChatColor.GOLD.toString() + ChatColor.BOLD + "Drehung rechter Arm")));
+        armorStandInventory.setItem(9 * 1 + 4, setItemStackHideAttributes(setItemStackLore(setItemStackNameGold(new ItemStack(Material.IRON_HELMET), "Kopfdrehung"))));
+        armorStandInventory.setItem(9 * 2 + 4, setItemStackHideAttributes(setItemStackLore(setItemStackNameGold(new ItemStack(Material.IRON_CHESTPLATE), "Körperdrehung"))));
+        armorStandInventory.setItem(9 * 2 + 3, setItemStackLore(setItemStackNameGold(new ItemStack(Material.STICK), "Drehung linker Arm")));
+        armorStandInventory.setItem(9 * 2 + 5, setItemStackLore(setItemStackNameGold(new ItemStack(Material.STICK), "Drehung rechter Arm")));
 
-        armorStandInventory.setItem(9 * 3 + 4, setItemStackLore(setItemStackName(new ItemStack(Material.IRON_BLOCK), ChatColor.GOLD.toString() + ChatColor.BOLD + "Position")));
-        armorStandInventory.setItem(9 * 4 + 3, setItemStackLore(setItemStackName(new ItemStack(Material.STICK), ChatColor.GOLD.toString() + ChatColor.BOLD + "Drehung linkes Bein")));
-        armorStandInventory.setItem(9 * 4 + 5, setItemStackLore(setItemStackName(new ItemStack(Material.STICK), ChatColor.GOLD.toString() + ChatColor.BOLD + "Drehung rechtes Bein")));
+        armorStandInventory.setItem(9 * 3 + 4, setItemStackLore(setItemStackNameGold(new ItemStack(Material.IRON_BLOCK), "Position")));
+        armorStandInventory.setItem(9 * 4 + 3, setItemStackLore(setItemStackNameGold(new ItemStack(Material.STICK), "Drehung linkes Bein")));
+        armorStandInventory.setItem(9 * 4 + 5, setItemStackLore(setItemStackNameGold(new ItemStack(Material.STICK), "Drehung rechtes Bein")));
 
-        armorStandInventory.setItem(9 * 0 + 4, setItemStackLore(setItemStackName(new ItemStack(Material.PUFFERFISH), ChatColor.GOLD.toString() + ChatColor.BOLD + "Größe")));
+        armorStandInventory.setItem(9 * 0 + 4, setItemStackLore(setItemStackNameGold(new ItemStack(Material.PUFFERFISH), "Größe")));
     }
 
     public Inventory getInventory() {
         return armorStandInventory;
     }
 
+    private static ItemStack setItemStackNameGold(ItemStack stack, String name) {
+        return setItemStackName(stack, Component.text(name, NamedTextColor.GOLD, TextDecoration.BOLD));
+    }
+
     private static ItemStack setItemStackName(ItemStack stack, String name) {
+        return setItemStackName(stack, Component.text(name));
+    }
+
+    private static ItemStack setItemStackName(ItemStack stack, Component name) {
         ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName(name);
+        meta.displayName(name.decoration(TextDecoration.ITALIC, false));
         stack.setItemMeta(meta);
         return stack;
     }
 
     private static ItemStack setItemStackLore(ItemStack stack, String... lore) {
         ItemMeta meta = stack.getItemMeta();
-        meta.setLore(Arrays.asList(lore));
+        ArrayList<Component> loreComponents = new ArrayList<>();
+        for (String loreLine : lore) {
+            loreComponents.add(Component.text(loreLine).decoration(TextDecoration.ITALIC, false));
+        }
+        meta.lore(loreComponents);
+        stack.setItemMeta(meta);
+        return stack;
+    }
+
+    private static ItemStack setItemStackHideAttributes(ItemStack stack) {
+        ItemMeta meta = stack.getItemMeta();
+        meta.addAttributeModifier(Attribute.ARMOR, new AttributeModifier(NamespacedKey.fromString("armorstandtools:justhide"), 0, Operation.ADD_SCALAR));
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         stack.setItemMeta(meta);
         return stack;
     }
@@ -155,7 +181,7 @@ public class PlayerArmorStandEditData {
 
     public void toggleHasBasePlate() {
         armorStand.setBasePlate(!armorStand.hasBasePlate());
-        owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Bodenplatte ist nun " + (armorStand.hasBasePlate() ? ChatColor.GREEN + "AKTIV" : ChatColor.RED + "INAKTIV"));
+        Messages.sendPart(owner, "Bodenplatte ist nun ", Messages.activation(armorStand.hasBasePlate()));
         updateHasBasePlate();
     }
 
@@ -171,7 +197,7 @@ public class PlayerArmorStandEditData {
 
     public void toggleHasArms() {
         armorStand.setArms(!armorStand.hasArms());
-        owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Arme sind nun " + (armorStand.hasArms() ? ChatColor.GREEN + "AKTIV" : ChatColor.RED + "INAKTIV"));
+        Messages.sendPart(owner, "Arme sind nun ", Messages.activation(armorStand.hasArms()));
         updateHasArms();
     }
 
@@ -187,7 +213,7 @@ public class PlayerArmorStandEditData {
 
     public void toggleIsSmall() {
         armorStand.setSmall(!armorStand.isSmall());
-        owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Verkleinert ist nun " + (armorStand.isSmall() ? ChatColor.GREEN + "AKTIV" : ChatColor.RED + "INAKTIV"));
+        Messages.sendPart(owner, "Verkleinert ist nun ", Messages.activation(armorStand.isSmall()));
         updateIsSmall();
     }
 
@@ -203,7 +229,7 @@ public class PlayerArmorStandEditData {
 
     public void toggleIsUnmoveable() {
         armorStand.setGravity(!armorStand.hasGravity());
-        owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Unbeweglich ist nun " + (!armorStand.hasGravity() ? ChatColor.GREEN + "AKTIV" : ChatColor.RED + "INAKTIV"));
+        Messages.sendPart(owner, "Unbeweglich ist nun ", Messages.activation(!armorStand.hasGravity()));
         updateIsUnmoveable();
     }
 
@@ -219,7 +245,7 @@ public class PlayerArmorStandEditData {
 
     public void toggleIsInvisible() {
         armorStand.setVisible(!armorStand.isVisible());
-        owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Unsichtbar ist nun " + (!armorStand.isVisible() ? ChatColor.GREEN + "AKTIV" : ChatColor.RED + "INAKTIV"));
+        Messages.sendPart(owner, "Unsichtbar ist nun ", Messages.activation(!armorStand.isVisible()));
         updateIsInvisible();
     }
 
@@ -235,7 +261,7 @@ public class PlayerArmorStandEditData {
 
     public void toggleNameIsVisible() {
         armorStand.setCustomNameVisible(!armorStand.isCustomNameVisible());
-        owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Namenanzeige ist nun " + (armorStand.isCustomNameVisible() ? ChatColor.GREEN + "AKTIV" : ChatColor.RED + "INAKTIV"));
+        Messages.sendPart(owner, "Namenanzeige ist nun ", Messages.activation(armorStand.isCustomNameVisible()));
         updateNameIsVisible();
     }
 
@@ -397,7 +423,7 @@ public class PlayerArmorStandEditData {
                 }
                 scaleAttribute.setBaseValue(value);
                 if (editState != EditState.RotationWithoutWindow) {
-                    owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Scale = " + format.format(value));
+                    Messages.send(owner, "Scale = " + format.format(value));
                 }
             }
         } else if (rotationToEdit == RotatablePart.Position) {
@@ -405,22 +431,22 @@ public class PlayerArmorStandEditData {
             if (xyz == 0 && Double.isFinite(diff)) {
                 location.setX(location.getX() + diff);
                 if (editState != EditState.RotationWithoutWindow) {
-                    owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "X = " + format.format(location.getX()));
+                    Messages.send(owner, "X = " + format.format(location.getX()));
                 }
             } else if (xyz == 1 && Double.isFinite(diff)) {
                 location.setY(Math.max(Math.min(location.getY() + diff, location.getWorld().getMaxHeight()), location.getWorld().getMinHeight()));
                 if (editState != EditState.RotationWithoutWindow) {
-                    owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Y = " + format.format(location.getY()));
+                    Messages.send(owner, "Y = " + format.format(location.getY()));
                 }
             } else if (xyz == 2 && Double.isFinite(diff)) {
                 location.setZ(location.getZ() + diff);
                 if (editState != EditState.RotationWithoutWindow) {
-                    owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Z = " + format.format(location.getZ()));
+                    Messages.send(owner, "Z = " + format.format(location.getZ()));
                 }
             } else if (xyz == 3) {
                 location.setYaw(Double.isFinite(diff) ? ((float) (location.getYaw() + radToDegree(diff))) : 0.0f);
                 if (editState != EditState.RotationWithoutWindow) {
-                    owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Yaw = " + format.format(location.getYaw()) + "°");
+                    Messages.send(owner, "Yaw = " + format.format(location.getYaw()) + "°");
                 }
                 // } else if (xyz == 4) {
                 // location.setPitch((float) (location.getPitch() + diff * 30));
@@ -442,17 +468,17 @@ public class PlayerArmorStandEditData {
             if (xyz == 0) {
                 angle = angle.setX(Double.isFinite(diff) ? (angle.getX() + diff) : 0.0f);
                 if (editState != EditState.RotationWithoutWindow) {
-                    owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "X = " + format.format(radToDegree(angle.getX())) + "°");
+                    Messages.send(owner, "X = " + format.format(radToDegree(angle.getX())) + "°");
                 }
             } else if (xyz == 1) {
                 angle = angle.setY(Double.isFinite(diff) ? (angle.getY() + diff) : 0.0f);
                 if (editState != EditState.RotationWithoutWindow) {
-                    owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Y = " + format.format(radToDegree(angle.getY())) + "°");
+                    Messages.send(owner, "Y = " + format.format(radToDegree(angle.getY())) + "°");
                 }
             } else if (xyz == 2) {
                 angle = angle.setZ(Double.isFinite(diff) ? (angle.getZ() + diff) : 0.0f);
                 if (editState != EditState.RotationWithoutWindow) {
-                    owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Z = " + format.format(radToDegree(angle.getZ())) + "°");
+                    Messages.send(owner, "Z = " + format.format(radToDegree(angle.getZ())) + "°");
                 }
             }
 
@@ -620,9 +646,9 @@ public class PlayerArmorStandEditData {
                     freeRotationAxis = row;
                     freeMoveStartTick = plugin.getServer().getCurrentTick();
                     owner.closeInventory();
-                    owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Freie Modifikation aktiviert.");
-                    owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GOLD + "Bewege dich, um den Rüstungsständer zu verändern.");
-                    owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GREEN + "Linksklick zum Bestätigen.");
+                    Messages.send(owner, "Freie Modifikation aktiviert.");
+                    Messages.send(owner, "Bewege dich, um den Rüstungsständer zu verändern.");
+                    Messages.sendSuccess(owner, "Linksklick zum Bestätigen.");
                 }
             } else if (slot == 9 * 5 + 0) {
                 editGeneral();
@@ -672,7 +698,7 @@ public class PlayerArmorStandEditData {
         if (editState == EditState.RotationWithoutWindow && lastLocation != null && initialLocation != null) {
             if (to.getWorld() != initialLocation.getWorld() || to.distanceSquared(initialLocation) > 15 * 15) {
                 plugin.stopEditing(owner, true);
-                owner.sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.GREEN + "Rüstungsständerbearbeitung abgebrochen.");
+                Messages.sendSuccess(owner, "Rüstungsständerbearbeitung abgebrochen.");
             } else {
                 double dx = to.getX() - lastLocation.getX();
                 double dz = to.getZ() - lastLocation.getZ();

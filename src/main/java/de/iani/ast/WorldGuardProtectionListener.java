@@ -7,7 +7,6 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,7 +24,7 @@ public class WorldGuardProtectionListener implements Listener {
     public void onArmorStandTeleport(ArmorStandTeleportEvent event) {
         ApplicableRegionSet set = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery().getApplicableRegions(BukkitAdapter.adapt(event.getLocation()));
         if (!canBuild(event.getPlayer(), set)) {
-            event.getPlayer().sendMessage(ChatColor.BLUE + "[AST] " + ChatColor.DARK_RED + "Keine Baurechte!");
+            Messages.sendError(event.getPlayer(), "Keine Baurechte!");
             event.setCancelled(true);
         }
     }
